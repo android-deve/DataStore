@@ -2,6 +2,7 @@ package com.jiyouliang.datastore;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -13,6 +14,9 @@ import com.inter.sharesdk.api.SharePlatform.SearchListener;
 import com.inter.sharesdk.model.SearchData;
 import com.jiyouliang.datastore.adapter.MyAdapter;
 import com.jiyouliang.datastore.datacenter.DataCenter;
+import com.jiyouliang.datastore.datacenter.DataCenterImpl;
+import com.jiyouliang.datastore.model.Student;
+import com.jiyouliang.datastore.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +24,7 @@ import java.util.List;
 public class MainActivity extends Activity implements OnClickListener,
 		SearchListener {
 
+	private static final String TAG = MainActivity.class.getSimpleName();
 	private ListView listView;
 	private MyAdapter adapter;
 	private List<SearchData> listData;
@@ -49,6 +54,67 @@ public class MainActivity extends Activity implements OnClickListener,
 
 		dataCenter = DataCenter.getInstance(this);
 		dataCenter.getSearchData(this, pagenum);
+
+		List<User> user = initTempUser();
+		List<User> user2 = initTempUser2();
+		List<Student> students = iniStudentList();
+
+		DataCenterImpl.getInstance(this).store2Cache(user, "user.text", User.class);
+		DataCenterImpl.getInstance(this).store2Cache(students, "student.text", Student.class);
+
+		Class cl1 = User.class;
+		Class cl2 = User.class;
+		Class cl3 = Student.class;
+
+
+		Log.e(TAG, "get user from cache");
+		List<User> cacheList = DataCenterImpl.getInstance(this).getFromCache(User.class, "user.text");
+		for(User u : cacheList){
+			Log.e(TAG,u.toString());
+		}
+
+		Log.e(TAG, "get student from cache");
+		List<Student> studentList = DataCenterImpl.getInstance(this).getFromCache(Student.class, "student.text");
+		for(Student u : studentList){
+			Log.e(TAG, u.toString());
+		}
+	}
+
+	private List<User> initTempUser(){
+		List<User> userList = new ArrayList<User>();
+		for(int i = 0; i < 10;i ++){
+			User user = new User();
+			user.setName("Jack" + i);
+			user.setAge(10 + i);
+			user.setAddress("汇潮科技大厦" + i);
+
+			userList.add(user);
+		}
+		return userList;
+	}
+
+	private List<User> initTempUser2(){
+		List<User> userList = new ArrayList<User>();
+		for(int i = 0; i < 10;i ++){
+			User user = new User();
+			user.setName("Jack" + i + 100);
+			user.setAge(10 + i);
+			user.setAddress("汇潮科技大厦" + i + 100);
+
+			userList.add(user);
+		}
+		return userList;
+	}
+
+	private List<Student> iniStudentList(){
+		List<Student> students = new ArrayList<Student>();
+		for(int i = 0;i < 3; i ++){
+			Student stu = new Student();
+			stu.setAchool("北大" + i);
+			stu.setProfessional("计算机科学与技术" + i);
+			students.add(stu);
+		}
+		return students;
 	}
 
 	/**
